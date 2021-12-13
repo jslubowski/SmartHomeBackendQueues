@@ -1,7 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using SmartHome.BLL.DTO.Temperature;
+using SmartHome.BLL.Services.Internal;
 using SmartHome.Services.Configuration;
 using System;
 using System.Text;
@@ -13,12 +17,14 @@ namespace SmartHome.Services.External
     public class RabbitService : BackgroundService
     {
         private readonly RabbitConfiguration _rabbitConfiguration;
+        private readonly IServiceProvider _serviceProvider;
         private IConnection _connection;
         private IModel _channel;
 
-        public RabbitService(IConfiguration configuration)
+        public RabbitService(IConfiguration configuration, IServiceProvider serviceProvider)
         {
             _rabbitConfiguration = configuration.GetSection("RabbitMQ").Get<RabbitConfiguration>();
+            _serviceProvider = serviceProvider;
 
             Initialize();
         }
@@ -27,20 +33,41 @@ namespace SmartHome.Services.External
         {
             stoppingToken.ThrowIfCancellationRequested();
 
-            var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += (ModuleHandle, ea) =>
+            var temperatureConsumer = new EventingBasicConsumer(_channel);
+            temperatureConsumer.Received += async (_, ea) =>
             {
-                Console.WriteLine("--> Event Received!");
-                var body = ea.Body;
-                var notificationMessage = Encoding.UTF8.GetString(body.ToArray());
+                Console.WriteLine("--> Temperature Event Received!");
 
-                Console.WriteLine(notificationMessage);
+                var body = ea.Body;
+                var temperatureMessage = Encoding.UTF8.GetString(body.ToArray());
+                var addTemperatureDto = JsonConvert.DeserializeObject<AddTemperatureDto>(temperatureMessage);
+
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var temperatureService = scope.ServiceProvider.GetRequiredService<ITemperatureService>();
+                    await temperatureService.AddTemperatureAsync(addTemperatureDto);
+                }
+            };
+
+            var humidityConsumer = new EventingBasicConsumer(_channel);
+            humidityConsumer.Received += (_, ea) =>
+            {
+                Console.WriteLine("--> Humidity Event Received!");
+
+                var body = ea.Body;
+                var humidityMessage = Encoding.UTF8.GetString(body.ToArray());
             };
 
             _channel.BasicConsume(
-                    queue: _rabbitConfiguration.Queue,
+                    queue: _rabbitConfiguration.TemperatureQueue,
                     autoAck: true,
-                    consumer: consumer
+                    consumer: temperatureConsumer
+                );
+
+            _channel.BasicConsume(
+                    queue: _rabbitConfiguration.HumidityQueue,
+                    autoAck: true,
+                    consumer: humidityConsumer
                 );
 
             return Task.CompletedTask;
@@ -70,9 +97,14 @@ namespace SmartHome.Services.External
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
             _channel.QueueBind(
-                    queue: _rabbitConfiguration.Queue,
+                    queue: _rabbitConfiguration.TemperatureQueue,
                     exchange: "amq.topic",
-                    routingKey: $"/{_rabbitConfiguration.Queue}"
+                    routingKey: $"/{_rabbitConfiguration.TemperatureQueue}"
+                );
+            _channel.QueueBind(
+                    queue: "backend",
+                    exchange: "amq.topic",
+                    routingKey: $"/{_rabbitConfiguration.HumidityQueue}"
                 );
             Console.WriteLine("--> Listening on the Message Bus");
             _connection.ConnectionShutdown += ConnectionShutdown;

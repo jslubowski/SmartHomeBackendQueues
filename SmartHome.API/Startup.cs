@@ -20,6 +20,7 @@ namespace SmartHome.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddPostgresContext(Configuration);
+            services.AddRepositories();
             services.AddCustomServices();
             services.AddControllers();
             services.AddSwaggerGen(c =>
