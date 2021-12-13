@@ -20,6 +20,7 @@ namespace SmartHome.Services.Internal
             var temperature = new Temperature(addTemperatureDto);
             await _temperatureRepository.AddTemperatureAsync(temperature);
             await _temperatureRepository.SaveChangesAsync();
+
             return new TemperatureDto(temperature);
         }
     }
