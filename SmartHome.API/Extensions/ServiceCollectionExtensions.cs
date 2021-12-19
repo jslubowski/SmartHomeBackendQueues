@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SmartHome.BLL.Repositories;
+using SmartHome.BLL.Repositories.Internal;
 using SmartHome.BLL.Services.Internal;
 using SmartHome.DAL.Data;
 using SmartHome.DAL.Repositories;
@@ -15,7 +15,7 @@ namespace SmartHome.API.Extensions
         public static void AddCustomServices(this IServiceCollection services)
         {
             services.AddHostedService<RabbitService>();
-            services.AddScoped<ITemperatureService, TemperatureService>();
+            services.AddScoped<ISensorService, SensorService>();
         }
 
         public static void AddPostgresContext(this IServiceCollection services, IConfiguration configuration)
@@ -30,7 +30,7 @@ namespace SmartHome.API.Extensions
 
         public static void AddRepositories(this IServiceCollection services)
         {
-            services.AddScoped<ITemperatureRepository, TemperatureRepository>();
+            services.AddScoped<ISensorRepository, SensorRepository>();
         }
     }
 }

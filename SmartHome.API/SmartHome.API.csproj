@@ -19,10 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SmartHome.BLL\SmartHome.BLL.csproj" />
     <ProjectReference Include="..\SmartHome.DAL\SmartHome.DAL.csproj" />
     <ProjectReference Include="..\SmartHome.Services\SmartHome.Services.csproj" />

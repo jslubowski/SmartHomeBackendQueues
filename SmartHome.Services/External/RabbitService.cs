@@ -40,12 +40,12 @@ namespace SmartHome.Services.External
 
                 var body = ea.Body;
                 var temperatureMessage = Encoding.UTF8.GetString(body.ToArray());
-                var addTemperatureDto = JsonConvert.DeserializeObject<AddTemperatureDto>(temperatureMessage);
+                var addMeasurementDto = JsonConvert.DeserializeObject<AddMeasurementDto>(temperatureMessage);
 
                 using (var scope = _serviceProvider.CreateScope())
                 {
-                    var temperatureService = scope.ServiceProvider.GetRequiredService<ITemperatureService>();
-                    await temperatureService.AddTemperatureAsync(addTemperatureDto);
+                    var temperatureService = scope.ServiceProvider.GetRequiredService<ISensorService>();
+                    await temperatureService.SaveMeasurementAsync(addMeasurementDto);
                 }
             };
 

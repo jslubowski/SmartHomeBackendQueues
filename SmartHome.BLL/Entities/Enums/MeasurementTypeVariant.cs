@@ -2,9 +2,9 @@
 
 namespace SmartHome.BLL.Entities.Enums
 {
-    public class TemperatureVariant
+    public class MeasurementTypeVariant
     {
-        public TemperatureUnit TemperatureUnit { get; set; }
+        public MeasurementType MeasurementType { get; set; }
         public string Name { get; set; }
     }
 }
