@@ -1,8 +1,9 @@
-﻿using System;
+﻿using SmartHome.BLL.Enums;
+using System;
 
-namespace SmartHome.BLL.DTO.Temperature
+namespace SmartHome.BLL.DTO.Measurements
 {
-    public class AddMeasurementDto
+    public class ReadMeasurementDto : GenericEventDto
     {
         public DateTime Date { get; set; }
         public Guid SensorId { get; set; }

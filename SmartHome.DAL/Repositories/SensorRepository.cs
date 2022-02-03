@@ -4,6 +4,7 @@ using SmartHome.BLL.Entities;
 using SmartHome.BLL.Repositories.Internal;
 using SmartHome.DAL.Data;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,6 +26,11 @@ namespace SmartHome.DAL.Repositories
             await _postgresDbContext.Sensors
                 .SingleOrDefaultAsync(sensor => sensor.Id == sensorId);
 
+        public async Task<IEnumerable<SensorDto>> GetSensorsAsync() =>
+            await _postgresDbContext.Sensors
+                .AsNoTracking()
+                .Select(sensor => new SensorDto(sensor))
+                .ToListAsync();
 
         public async Task<LatestValueSensorDto> GetLatestValue(Guid sensorId) =>
             await _postgresDbContext.Sensors

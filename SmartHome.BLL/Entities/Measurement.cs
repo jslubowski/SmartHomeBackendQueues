@@ -1,5 +1,4 @@
-﻿using SmartHome.BLL.DTO.Temperature;
-using SmartHome.BLL.Enums;
+﻿using SmartHome.BLL.DTO.Measurements;
 using System;
 
 namespace SmartHome.BLL.Entities
@@ -16,7 +15,7 @@ namespace SmartHome.BLL.Entities
 
         public Measurement() { }
 
-        public Measurement(AddMeasurementDto addMeasurementDto)
+        public Measurement(ReadMeasurementDto addMeasurementDto)
         {
             Date = addMeasurementDto.Date;
             SensorId = addMeasurementDto.SensorId;

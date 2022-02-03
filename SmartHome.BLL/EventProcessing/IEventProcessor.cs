@@ -1,7 +1,9 @@
-﻿namespace SmartHome.BLL.EventProcessing
+﻿using System.Threading.Tasks;
+
+namespace SmartHome.BLL.EventProcessing
 {
     public interface IEventProcessor
     {
-        void ProcessMessage(string message);
+        Task ProcessEvent(string message);
     }
 }

@@ -18,9 +18,4 @@
     <ProjectReference Include="..\SmartHome.BLL\SmartHome.BLL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="EventProcessing\" />
-    <Folder Include="Exceptions\" />
-  </ItemGroup>
-
 </Project>

@@ -1,5 +1,5 @@
-﻿using SmartHome.BLL.DTO.Sensor;
-using SmartHome.BLL.DTO.Temperature;
+﻿using SmartHome.BLL.DTO.Measurements;
+using SmartHome.BLL.DTO.Sensor;
 using SmartHome.BLL.Enums;
 using System;
 using System.Collections.Generic;
@@ -14,6 +14,8 @@ namespace SmartHome.BLL.Entities
         public string CustomName { get; protected set; }
         public float LatestValue { get; protected set; }
         public IList<Measurement> Measurements { get; protected set; }
+        public float UpperTriggerLimit { get; protected set; }
+        public float LowerTriggerLimit { get; protected set; }
 
         public Sensor() 
         {
@@ -27,7 +29,7 @@ namespace SmartHome.BLL.Entities
             MeasurementUnit = (MeasurementUnit)addSensorDto.MeasurementUnit;
         }
 
-        public Sensor(AddMeasurementDto addMeasurementDto) : this()
+        public Sensor(ReadMeasurementDto addMeasurementDto) : this()
         {
             Id = addMeasurementDto.SensorId;
             MeasurementType = (MeasurementType)addMeasurementDto.MeasurementType;
@@ -35,10 +37,16 @@ namespace SmartHome.BLL.Entities
             AddMeasurement(addMeasurementDto);
         }
 
-        public void AddMeasurement(AddMeasurementDto addMeasurementDto)
+        public void AddMeasurement(ReadMeasurementDto readMeasurementsDto)
         {
-            var measurement = new Measurement(addMeasurementDto);
+            var measurement = new Measurement(readMeasurementsDto);
             Measurements.Add(measurement);
+        }
+
+        public void ModifyTriggers(ChangeSensorTriggersDto changeSensorTriggersDto)
+        {
+            UpperTriggerLimit = changeSensorTriggersDto.UpperTriggerLimit;
+            LowerTriggerLimit = changeSensorTriggersDto.LowerTriggerLimit;
         }
     }
 }

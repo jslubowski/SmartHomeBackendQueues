@@ -9,6 +9,8 @@ namespace SmartHome.BLL.DTO.Sensor
         public MeasurementType MeasurementType { get; set; }
         public MeasurementUnit MeasurementUnit { get; set; }
         public string CustomName { get; set; }
+        public float UpperTriggerLimit { get; set; }
+        public float LowerTriggerLimit { get; set; }
 
         public SensorDto(Entities.Sensor sensor)
         {
@@ -16,6 +18,8 @@ namespace SmartHome.BLL.DTO.Sensor
             MeasurementType = sensor.MeasurementType;
             MeasurementUnit = sensor.MeasurementUnit;
             CustomName = sensor.CustomName ?? string.Empty;
+            UpperTriggerLimit = sensor.UpperTriggerLimit;
+            LowerTriggerLimit = sensor.LowerTriggerLimit;
         }
     }
 }
