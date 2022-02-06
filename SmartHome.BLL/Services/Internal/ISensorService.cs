@@ -12,9 +12,10 @@ namespace SmartHome.BLL.Services.Internal
         Task<SensorDto> GetAsync(Guid sensorId);
         Task<SensorDto> AddAsync(AddSensorDto addSensorDto);
         Task<LatestValueSensorDto> GetLatestValue(Guid sensorId);
-        Task SaveMeasurementAsync(Sensor sensor, ReadMeasurementDto addMeasurementDto);
+        Task<Sensor> SaveMeasurementAsync(Sensor sensor, ReadMeasurementDto addMeasurementDto);
         Task<SensorDto> ChangeSensorTriggersAsync(Guid sensorId, ChangeSensorTriggersDto changeSensorTriggersDto);
         Task<IEnumerable<SensorDto>> GetSensorsAsync();
         Task ReadMeasurementAsync(ReadMeasurementDto readMeasurementDto);
+        Task<SensorDto> ChangeSensorNameAsync(Guid sensorId, ChangeSensorNameDto changeSensorNameDto);
     }
 }

@@ -38,6 +38,13 @@ namespace SmartHome.API.Controllers
             return OkOrNoContent(sensor);
         }
 
+        [HttpPatch("{sensorId}/custom-name")]
+        public async Task<ActionResult<SensorDto>> ChangeCustomNameAsync([FromRoute] Guid sensorId, [FromBody] ChangeSensorNameDto changeSensorNameDto)
+        {
+            var sensor = await _sensorService.ChangeSensorNameAsync(sensorId, changeSensorNameDto);
+            return OkOrNoContent(sensor);
+        }
+
         private ActionResult<T> OkOrNoContent<T>(T obj) => 
             obj switch
             {

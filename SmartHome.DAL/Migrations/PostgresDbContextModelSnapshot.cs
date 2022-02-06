@@ -129,7 +129,7 @@ namespace SmartHome.DAL.Migrations
                         .HasColumnType("real")
                         .HasColumnName("latest_value");
 
-                    b.Property<float>("LowerTriggerLimit")
+                    b.Property<float?>("LowerTriggerLimit")
                         .HasColumnType("real")
                         .HasColumnName("lower_trigger_limit");
 
@@ -141,7 +141,7 @@ namespace SmartHome.DAL.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("measurement_unit");
 
-                    b.Property<float>("UpperTriggerLimit")
+                    b.Property<float?>("UpperTriggerLimit")
                         .HasColumnType("real")
                         .HasColumnName("upper_trigger_limit");
 

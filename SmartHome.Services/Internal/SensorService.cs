@@ -57,13 +57,13 @@ namespace SmartHome.Services.Internal
             return new SensorDto(sensor);
         }
 
-        public async Task<IEnumerable<SensorDto>> GetSensorsAsync() => 
+        public async Task<IEnumerable<SensorDto>> GetSensorsAsync() =>
             await _sensorRepository.GetSensorsAsync();
 
-        public async Task<LatestValueSensorDto> GetLatestValue(Guid sensorId) => 
+        public async Task<LatestValueSensorDto> GetLatestValue(Guid sensorId) =>
             await _sensorRepository.GetLatestValue(sensorId);
 
-        public async Task SaveMeasurementAsync(Sensor sensor, ReadMeasurementDto readMeasurementDto)
+        public async Task<Sensor> SaveMeasurementAsync(Sensor sensor, ReadMeasurementDto readMeasurementDto)
         {
             // TODO save only if older than 15 minutes
             if (sensor is null)
@@ -75,22 +75,31 @@ namespace SmartHome.Services.Internal
                 sensor.AddMeasurement(readMeasurementDto);
 
             await _sensorRepository.SaveChangesAsync();
+            return sensor;
         }
 
         public async Task ReadMeasurementAsync(ReadMeasurementDto readMeasurementDto)
         {
             var sensor = await _sensorRepository.GetAsync(readMeasurementDto.SensorId);
-            _messageBusClient.SendAlertAsync(new BLL.DTO.AlertCreateDto { ActorId = Guid.NewGuid() });
 
-            if (sensor is not null)
-            {
-                if (readMeasurementDto.Value > sensor.UpperTriggerLimit)
-                    Console.WriteLine("---> Sending above threshold alert through Rabbit");
-                else if (readMeasurementDto.Value < sensor.LowerTriggerLimit)
-                    Console.WriteLine("---> Sending below threshold alert through Rabbit");
-            }
+            sensor = await SaveMeasurementAsync(sensor, readMeasurementDto);
 
-            await SaveMeasurementAsync(sensor, readMeasurementDto);
+            var alertDto = sensor.ConsumeMeasurement(readMeasurementDto.Value);
+            if (alertDto is not null)
+                _messageBusClient.SendAlertAsync(alertDto);
+        }
+
+        public async Task<SensorDto> ChangeSensorNameAsync(Guid sensorId, ChangeSensorNameDto changeSensorNameDto)
+        {
+            var sensor = await _sensorRepository.GetAsync(sensorId);
+
+            if (sensor is null)
+                return null;
+
+            sensor.ChangeCustomName(changeSensorNameDto.CustomName);
+
+            await _sensorRepository.SaveChangesAsync();
+            return new SensorDto(sensor);
         }
     }
 }

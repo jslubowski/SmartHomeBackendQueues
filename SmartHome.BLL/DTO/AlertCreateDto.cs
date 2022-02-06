@@ -1,11 +1,12 @@
-﻿using System;
+﻿using SmartHome.BLL.Enums;
+using System;
 
 namespace SmartHome.BLL.DTO
 {
     public class AlertCreateDto
     {
-        public Guid ActorId { get; set; }
-        public bool ActorState { get; set; }
-        public string Event { get; set; }
+        public Guid SensorId { get; set; }
+        public string AlertMessage { get; set; }
+        public Trigger Trigger { get; set; }
     }
 }

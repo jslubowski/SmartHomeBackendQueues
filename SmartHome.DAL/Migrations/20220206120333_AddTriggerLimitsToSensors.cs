@@ -10,15 +10,13 @@ namespace SmartHome.DAL.Migrations
                 name: "lower_trigger_limit",
                 table: "sensors",
                 type: "real",
-                nullable: false,
-                defaultValue: 0f);
+                nullable: true);
 
             migrationBuilder.AddColumn<float>(
                 name: "upper_trigger_limit",
                 table: "sensors",
                 type: "real",
-                nullable: false,
-                defaultValue: 0f);
+                nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
