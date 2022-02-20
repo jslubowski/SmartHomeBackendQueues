@@ -17,7 +17,7 @@ namespace SmartHome.BLL.Entities
 
         public Measurement(ReadMeasurementDto addMeasurementDto)
         {
-            Date = addMeasurementDto.Date;
+            Date = DateTime.Now;
             SensorId = addMeasurementDto.SensorId;
             Value = addMeasurementDto.Value;
         }

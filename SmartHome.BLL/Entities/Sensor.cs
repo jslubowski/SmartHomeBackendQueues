@@ -4,7 +4,6 @@ using SmartHome.BLL.DTO.Sensor;
 using SmartHome.BLL.Enums;
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 
 namespace SmartHome.BLL.Entities
 {
@@ -54,17 +53,27 @@ namespace SmartHome.BLL.Entities
 
         public AlertCreateDto ConsumeMeasurement(float measurement)
         {
+            LatestValue = measurement;
             var alertCreateDto = new AlertCreateDto() { SensorId = Id };
 
             if (!AreTriggersSet())
                 return null;
 
-            if (measurement > UpperTriggerLimit)
+            if (measurement >= UpperTriggerLimit && LatestValue <= UpperTriggerLimit)
                 alertCreateDto.Trigger = Trigger.Upper;
-            else if (measurement < LowerTriggerLimit)
+            else if (measurement <= LowerTriggerLimit && LatestValue >= LowerTriggerLimit)
                 alertCreateDto.Trigger = Trigger.Lower;
-            else 
+            else
                 return null;
+
+            var alertMessageTriggerText = alertCreateDto.Trigger == Trigger.Upper ? "above" : "below"; 
+
+            alertCreateDto.AlertMessage = MeasurementType switch
+            {
+                MeasurementType.Temperature => $"Temperature {alertMessageTriggerText} limit.",
+                MeasurementType.Humidity => $"Humidity {alertMessageTriggerText} limit.",
+                _ => $"Unknown measurement type {alertMessageTriggerText} limit."
+            };
 
             return alertCreateDto;
         }

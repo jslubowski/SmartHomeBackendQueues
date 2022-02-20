@@ -4,6 +4,7 @@ using SmartHome.BLL.DTO.Measurements;
 using SmartHome.BLL.EventProcessing;
 using SmartHome.BLL.Services.Internal;
 using SmartHome.Services.Enums;
+using System;
 using System.Threading.Tasks;
 
 namespace SmartHome.Services.EventProcessing
@@ -19,16 +20,24 @@ namespace SmartHome.Services.EventProcessing
 
         public async Task ProcessEvent(string message)
         {
-            var eventType = DetermineEvent(message);
-
-            switch (eventType)
+            try
             {
-                case EventType.MeasurementPublished:
-                    await ReadMeasurement(message);
-                    break;
-                default:
-                    System.Console.WriteLine("Unknown event");
-                    break;
+                var eventType = DetermineEvent(message);
+
+                switch (eventType)
+                {
+                    case EventType.MeasurementPublished:
+                        await ReadMeasurement(message);
+                        break;
+                    default:
+                        Console.WriteLine("Unknown event");
+                        break;
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Error while reading body of the message: {message}");
+                Console.WriteLine(ex.Message);
             }
         }
 

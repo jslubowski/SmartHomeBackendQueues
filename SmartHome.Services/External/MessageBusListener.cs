@@ -69,7 +69,7 @@ namespace SmartHome.Services.External
             _measurementChannel.QueueBind(
                     queue: _rabbitConfiguration.MeasurementsQueueName,
                     exchange: "amq.topic",
-                    routingKey: $"/{_rabbitConfiguration.MeasurementsQueueName}"
+                    routingKey: $"backend/{_rabbitConfiguration.MeasurementsQueueName}"
                 );
 
             Console.WriteLine("--> Listening on the Message Bus");

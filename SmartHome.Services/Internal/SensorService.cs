@@ -6,6 +6,7 @@ using SmartHome.BLL.Services.External;
 using SmartHome.BLL.Services.Internal;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SmartHome.Services.Internal
@@ -14,6 +15,8 @@ namespace SmartHome.Services.Internal
     {
         private readonly ISensorRepository _sensorRepository;
         private readonly IMessageBusClient _messageBusClient;
+
+        private const double saveMeasurementInterval = 5.0;
 
         public SensorService(ISensorRepository sensorRepository, IMessageBusClient messageBusClient)
         {
@@ -65,13 +68,16 @@ namespace SmartHome.Services.Internal
 
         public async Task<Sensor> SaveMeasurementAsync(Sensor sensor, ReadMeasurementDto readMeasurementDto)
         {
-            // TODO save only if older than 15 minutes
             if (sensor is null)
             {
                 sensor = new(readMeasurementDto);
                 await _sensorRepository.AddAsync(sensor);
             }
-            else
+
+            var latestMeasurement = await _sensorRepository.GetLatestMeasurementAsync(sensor.Id);
+            var interval = DateTime.Now - latestMeasurement?.Date ?? TimeSpan.FromMinutes(2 * saveMeasurementInterval); // if null then exceed the save interval so the first measurement is saved
+
+            if (interval > TimeSpan.FromMinutes(saveMeasurementInterval))
                 sensor.AddMeasurement(readMeasurementDto);
 
             await _sensorRepository.SaveChangesAsync();
@@ -82,11 +88,12 @@ namespace SmartHome.Services.Internal
         {
             var sensor = await _sensorRepository.GetAsync(readMeasurementDto.SensorId);
 
-            sensor = await SaveMeasurementAsync(sensor, readMeasurementDto);
-
             var alertDto = sensor.ConsumeMeasurement(readMeasurementDto.Value);
             if (alertDto is not null)
                 _messageBusClient.SendAlertAsync(alertDto);
+
+
+            await SaveMeasurementAsync(sensor, readMeasurementDto);
         }
 
         public async Task<SensorDto> ChangeSensorNameAsync(Guid sensorId, ChangeSensorNameDto changeSensorNameDto)

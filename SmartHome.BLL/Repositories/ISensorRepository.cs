@@ -13,5 +13,6 @@ namespace SmartHome.BLL.Repositories.Internal
         Task AddAsync(Sensor sensor);
         Task<LatestValueSensorDto> GetLatestValue(Guid sensorId);
         Task<IEnumerable<SensorDto>> GetSensorsAsync();
+        Task<Measurement> GetLatestMeasurementAsync(Guid sensorId);
     }
 }
