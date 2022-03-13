@@ -15,7 +15,7 @@ namespace SmartHome.API
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -27,6 +27,14 @@ namespace SmartHome.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SmartHome.API", Version = "v1" });
             });
+            services.AddCors(options =>
+                options.AddPolicy(name: "dev_policy", builder =>
+                {
+                    builder
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowAnyOrigin();
+                }));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -41,7 +49,7 @@ namespace SmartHome.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseCors("dev_policy");
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

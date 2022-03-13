@@ -11,7 +11,7 @@ namespace SmartHome.BLL.DTO.Sensor
         public string CustomName { get; set; }
         public float? UpperTriggerLimit { get; set; }
         public float? LowerTriggerLimit { get; set; }
-
+        public float? LatestValue { get; set; }
 
         public SensorDto(Entities.Sensor sensor)
         {
@@ -21,6 +21,7 @@ namespace SmartHome.BLL.DTO.Sensor
             CustomName = sensor.CustomName ?? string.Empty;
             UpperTriggerLimit = sensor.UpperTriggerLimit;
             LowerTriggerLimit = sensor.LowerTriggerLimit;
+            LatestValue = sensor.LatestValue;
         }
     }
 }

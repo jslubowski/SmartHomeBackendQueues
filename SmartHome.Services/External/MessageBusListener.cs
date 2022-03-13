@@ -19,7 +19,7 @@ namespace SmartHome.Services.External
         private IConnection _connection;
         private IModel _measurementChannel;
 
-        public MessageBusListener(IConfiguration configuration, IServiceProvider serviceProvider, IEventProcessor eventProcessor)
+        public MessageBusListener(IConfiguration configuration, IEventProcessor eventProcessor)
         {
             _rabbitConfiguration = configuration.GetSection("RabbitMQ").Get<RabbitConfiguration>();
             _eventProcessor = eventProcessor;

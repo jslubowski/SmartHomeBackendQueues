@@ -16,7 +16,7 @@ namespace SmartHome.Services.Internal
         private readonly ISensorRepository _sensorRepository;
         private readonly IMessageBusClient _messageBusClient;
 
-        private const double saveMeasurementInterval = 5.0;
+        private const double SaveMeasurementInterval = 5.0;
 
         public SensorService(ISensorRepository sensorRepository, IMessageBusClient messageBusClient)
         {
@@ -75,9 +75,9 @@ namespace SmartHome.Services.Internal
             }
 
             var latestMeasurement = await _sensorRepository.GetLatestMeasurementAsync(sensor.Id);
-            var interval = DateTime.Now - latestMeasurement?.Date ?? TimeSpan.FromMinutes(2 * saveMeasurementInterval); // if null then exceed the save interval so the first measurement is saved
+            var interval = DateTime.Now - latestMeasurement?.Date ?? TimeSpan.FromMinutes(2 * SaveMeasurementInterval); // if null then exceed the save interval so the first measurement is saved
 
-            if (interval > TimeSpan.FromMinutes(saveMeasurementInterval))
+            if (interval > TimeSpan.FromMinutes(SaveMeasurementInterval))
                 sensor.AddMeasurement(readMeasurementDto);
 
             await _sensorRepository.SaveChangesAsync();
@@ -87,13 +87,11 @@ namespace SmartHome.Services.Internal
         public async Task ReadMeasurementAsync(ReadMeasurementDto readMeasurementDto)
         {
             var sensor = await _sensorRepository.GetAsync(readMeasurementDto.SensorId);
+            await SaveMeasurementAsync(sensor, readMeasurementDto);
 
             var alertDto = sensor.ConsumeMeasurement(readMeasurementDto.Value);
             if (alertDto is not null)
                 _messageBusClient.SendAlertAsync(alertDto);
-
-
-            await SaveMeasurementAsync(sensor, readMeasurementDto);
         }
 
         public async Task<SensorDto> ChangeSensorNameAsync(Guid sensorId, ChangeSensorNameDto changeSensorNameDto)

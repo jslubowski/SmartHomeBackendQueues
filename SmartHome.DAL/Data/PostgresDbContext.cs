@@ -7,7 +7,6 @@ namespace SmartHome.DAL.Data
 {
     public class PostgresDbContext : DbContext
     {
-        //public DbSet<Measurement> Measurements { get; set; }
         public DbSet<Sensor> Sensors { get; set; }
 
         public PostgresDbContext(DbContextOptions options) : base(options) { }

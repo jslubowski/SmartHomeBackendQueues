@@ -34,8 +34,9 @@ namespace SmartHome.DAL.Repositories
 
         public async Task<LatestValueSensorDto> GetLatestValue(Guid sensorId) =>
             await _postgresDbContext.Sensors
+                .Where(sensor => sensor.Id == sensorId)
                 .Select(sensor => new LatestValueSensorDto(sensor))
-                .SingleOrDefaultAsync(sensor => sensor.Id == sensorId);
+                .SingleAsync();
 
         public async Task SaveChangesAsync() => await _postgresDbContext.SaveChangesAsync();
 
@@ -46,6 +47,5 @@ namespace SmartHome.DAL.Repositories
                 .SelectMany(sensor => sensor.Measurements)
                 .OrderBy(measurement => measurement.Date)
                 .LastOrDefaultAsync();
-
     }
 }

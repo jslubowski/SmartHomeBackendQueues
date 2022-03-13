@@ -19,8 +19,8 @@ namespace SmartHome.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<SensorDto>> GetSensorsAsync() => 
-            await _sensorService.GetSensorsAsync();
+        public async Task<ActionResult<IEnumerable<SensorDto>>> GetSensorsAsync() => 
+            Ok(await _sensorService.GetSensorsAsync());
 
         [HttpGet("{sensorId}")]
         public async Task<ActionResult<SensorDto>> GetAsync(Guid sensorId)
@@ -29,7 +29,9 @@ namespace SmartHome.API.Controllers
             return OkOrNoContent(sensor);
         }
 
-        // TODO : endpoint to change custom name
+        [HttpGet("{sensorId}/current-value")]
+        public async Task<ActionResult<LatestValueSensorDto>> GetCurrentValue(Guid sensorId) => 
+            OkOrNoContent(await _sensorService.GetLatestValue(sensorId));
 
         [HttpPatch("{sensorId}/triggers")]
         public async Task<ActionResult<SensorDto>> ChangeTriggersAsync([FromRoute] Guid sensorId, [FromBody] ChangeSensorTriggersDto changeSensorTriggersDto)
